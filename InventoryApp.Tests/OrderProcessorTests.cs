@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace InventoryApp.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class OrderProcessorTests
     {
         [TestMethod]
         public void SubmitOrderItemInStock()
@@ -20,6 +20,7 @@ namespace InventoryApp.Tests
             paymentServiceMock.Setup(p => p.ChargePayment(It.IsAny<string>(), It.IsAny<decimal>())).Returns(true);
             var paymentService = paymentServiceMock.Object;
 
+            //TODO: Change from Mocks to actual objects to remove virtuals
             var productMock = new Mock<Product>();
             productMock.SetupGet(p => p.ProductId).Returns(1);
             productMock.SetupGet(p => p.Cost).Returns(1);

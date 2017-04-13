@@ -33,6 +33,7 @@ namespace InventoryApp
             }
 
             return _paymentService.ChargePayment(order.CreditCardNumber, order.Total);
+            //TODO: If charge successfull send email
         }
     }
 }
