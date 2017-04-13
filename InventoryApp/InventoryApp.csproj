@@ -42,6 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IInventoryRepository.cs" />
+    <Compile Include="IOrderProcessor.cs" />
+    <Compile Include="IPaymentService.cs" />
+    <Compile Include="LineItem.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderProcessor.cs" />
+    <Compile Include="Product.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
