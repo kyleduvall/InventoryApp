@@ -1,4 +1,4 @@
-﻿using System;
+﻿using InventoryApp.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace InventoryApp.Tests
@@ -7,7 +7,7 @@ namespace InventoryApp.Tests
     public class LineItemTests
     {
         [TestMethod]
-        public void CalculateCost()
+        public void CalculateSubtotal()
         {
             //Arrange
             var item = new LineItem()
@@ -19,13 +19,13 @@ namespace InventoryApp.Tests
                 Quantity = 3
             };
 
-            decimal expectedCost = 9;
+            decimal expectedSubtotal = 9;
 
             //Act
-            var actualCost = item.Subtotal;
+            var actualSubtotal = item.Subtotal;
 
             //Assert
-            Assert.AreEqual(expectedCost, actualCost);
+            Assert.AreEqual(expectedSubtotal, actualSubtotal);
         }
     }
 }

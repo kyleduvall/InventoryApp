@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using InventoryApp.Models;
+using InventoryApp.Repositories;
+using InventoryApp.Services;
+using System;
 
 namespace InventoryApp
 {
@@ -10,30 +9,43 @@ namespace InventoryApp
     {
         private IInventoryRepository _repository;
         private IPaymentService _paymentService;
+        private IEmailService _emailService;
+        private const string FROM_ADDRESS = "noreply@company.com";
+        private const string TO_ADDRESS = "shipping@company.com";
 
-        public OrderProcessor(IInventoryRepository repository, IPaymentService paymentService)
+        public OrderProcessor(IInventoryRepository repository, IPaymentService paymentService, IEmailService emailService)
         {
             _repository = repository;
             _paymentService = paymentService;
+            _emailService = emailService;
         }
 
-        public bool SubmitOrder(Order order)
+        public bool SubmitOrder(IOrder order)
         {
             if (order == null)
             {
-                throw new ArgumentException("order");
+                throw new ArgumentException(nameof(order));
             }
 
-            foreach (var item in order.LineItems)
+            if(!order.InStock(_repository))
             {
-                if (!(_repository.CheckInventory(item.Product.ProductId.ToString(), item.Quantity)))
-                {
-                    return false;
-                }
+                return false;
             }
 
-            return _paymentService.ChargePayment(order.CreditCardNumber, order.Total);
-            //TODO: If charge successfull send email
+            if (_paymentService.ChargePayment(order.CreditCardNumber, order.Total))
+            {
+                bool emailSent = _emailService.SendEmail(FROM_ADDRESS, TO_ADDRESS, string.Empty, string.Empty);
+
+                if (!emailSent)
+                {
+                    //TODO: Capture in companies logging system
+                    Console.WriteLine($"Email failed to send! Order # {order.OrderId}");
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

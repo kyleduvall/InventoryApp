@@ -42,13 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IInventoryRepository.cs" />
+    <Compile Include="Services\IEmailService.cs" />
+    <Compile Include="Repositories\IInventoryRepository.cs" />
+    <Compile Include="Models\IOrder.cs" />
     <Compile Include="IOrderProcessor.cs" />
-    <Compile Include="IPaymentService.cs" />
-    <Compile Include="LineItem.cs" />
-    <Compile Include="Order.cs" />
+    <Compile Include="Services\IPaymentService.cs" />
+    <Compile Include="Models\LineItem.cs" />
+    <Compile Include="Models\Order.cs" />
     <Compile Include="OrderProcessor.cs" />
-    <Compile Include="Product.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

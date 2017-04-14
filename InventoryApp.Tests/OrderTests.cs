@@ -1,5 +1,7 @@
-﻿using System;
+﻿using InventoryApp.Models;
+using InventoryApp.Repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System.Collections.Generic;
 
 namespace InventoryApp.Tests
@@ -7,10 +9,11 @@ namespace InventoryApp.Tests
     [TestClass]
     public class OrderTests
     {
-        [TestMethod]
-        public void CalculateTotal()
+        private IOrder _order;
+
+        [TestInitialize]
+        public void Initialize()
         {
-            //Arrange
             var item = new LineItem()
             {
                 Product = new Product()
@@ -20,23 +23,58 @@ namespace InventoryApp.Tests
                 Quantity = 3
             };
 
-            var newOrder = new Order()
+            _order = new Order()
             {
                 LineItems = new List<LineItem>()
             };
 
             for (int i = 0; i < 5; i++)
             {
-                newOrder.LineItems.Add(item);
+                _order.LineItems.Add(item);
             }
+        }
 
+        [TestMethod]
+        public void CalculateTotal()
+        {
+            //Arrange
             decimal expectedTotal = 45m;
 
             //Act
-            decimal actualTotal = newOrder.Total;
+            decimal actualTotal = _order.Total;
 
             //Assert
             Assert.AreEqual(expectedTotal, actualTotal);
+        }
+
+        [TestMethod]
+        public void CheckOrderInStock()
+        {
+            //Arrange
+            var repositoryMock = new Mock<IInventoryRepository>();
+            repositoryMock.Setup(r => r.CheckInventory(It.IsAny<string>(), It.IsAny<int>())).Returns(true);
+            var repository = repositoryMock.Object;
+
+            //Act
+            bool isInStock = _order.InStock(repository);
+
+            //Assert
+            Assert.IsTrue(isInStock);
+        }
+
+        [TestMethod]
+        public void CheckOrderOutOfStock()
+        {
+            //Arrange
+            var repositoryMock = new Mock<IInventoryRepository>();
+            repositoryMock.Setup(r => r.CheckInventory(It.IsAny<string>(), It.IsAny<int>())).Returns(false);
+            var repository = repositoryMock.Object;
+
+            //Act
+            bool isInStock = _order.InStock(repository);
+
+            //Assert
+            Assert.IsFalse(isInStock);
         }
     }
 }

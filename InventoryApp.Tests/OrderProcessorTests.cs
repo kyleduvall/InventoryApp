@@ -1,49 +1,70 @@
-﻿using System;
+﻿using InventoryApp.Models;
+using InventoryApp.Repositories;
+using InventoryApp.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Collections.Generic;
 
 namespace InventoryApp.Tests
 {
     [TestClass]
     public class OrderProcessorTests
     {
+        private IInventoryRepository _repository;
+        private IPaymentService _paymentService;
+        private IEmailService _emailService;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            var repositoryMock = new Mock<IInventoryRepository>();
+            repositoryMock.Setup(r => r.CheckInventory(It.IsAny<string>(), It.IsAny<int>())).Returns(true);
+            _repository = repositoryMock.Object;
+
+            var paymentServiceMock = new Mock<IPaymentService>();
+            paymentServiceMock.Setup(p => p.ChargePayment(It.IsAny<string>(), It.IsAny<decimal>())).Returns(true);
+            _paymentService = paymentServiceMock.Object;
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(e => e.SendEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            _emailService = emailServiceMock.Object;
+        }
+
         [TestMethod]
         public void SubmitOrderItemInStock()
         {
             //Arrange
-            var repositoryMock = new Mock<IInventoryRepository>();
-            repositoryMock.Setup(r => r.CheckInventory(It.IsAny<string>(), It.IsAny<int>())).Returns(true);
-            var repository = repositoryMock.Object;
-
-            var paymentServiceMock = new Mock<IPaymentService>();
-            paymentServiceMock.Setup(p => p.ChargePayment(It.IsAny<string>(), It.IsAny<decimal>())).Returns(true);
-            var paymentService = paymentServiceMock.Object;
-
-            //TODO: Change from Mocks to actual objects to remove virtuals
-            var productMock = new Mock<Product>();
-            productMock.SetupGet(p => p.ProductId).Returns(1);
-            productMock.SetupGet(p => p.Cost).Returns(1);
-            var product = productMock.Object;
-
-            var lineItemMock = new Mock<LineItem>();
-            lineItemMock.SetupGet(l => l.Product).Returns(product);
-            lineItemMock.SetupGet(l => l.Quantity).Returns(1);
-            lineItemMock.SetupGet(l => l.Subtotal).Returns(20);
-            var lineItem = lineItemMock.Object;
-
-            var orderMock = new Mock<Order>();
-            orderMock.SetupGet(o => o.LineItems).Returns(new List<LineItem>() { lineItem, lineItem, lineItem, lineItem, lineItem });
+            var orderMock = new Mock<IOrder>();
+            orderMock.SetupGet(o => o.CreditCardNumber).Returns("1234123412341234");
             orderMock.SetupGet(o => o.Total).Returns(100);
+            orderMock.Setup(o => o.InStock(_repository)).Returns(true);
             var order = orderMock.Object;
 
-            var orderProcessor = new OrderProcessor(repository, paymentService);
+            var orderProcessor = new OrderProcessor(_repository, _paymentService, _emailService);
 
             //Act
             bool isSuccess = orderProcessor.SubmitOrder(order);
-            
+
             //Assess
             Assert.IsTrue(isSuccess);
+        }
+
+        [TestMethod]
+        public void SubmitOrderItemOutOfStock()
+        {
+            //Arrange
+            var orderMock = new Mock<IOrder>();
+            orderMock.SetupGet(o => o.CreditCardNumber).Returns("1234123412341234");
+            orderMock.SetupGet(o => o.Total).Returns(100);
+            orderMock.Setup(o => o.InStock(_repository)).Returns(false);
+            var order = orderMock.Object;
+
+            var orderProcessor = new OrderProcessor(_repository, _paymentService, _emailService);
+
+            //Act
+            bool isSuccess = orderProcessor.SubmitOrder(order);
+
+            //Assess
+            Assert.IsFalse(isSuccess);
         }
     }
 }
