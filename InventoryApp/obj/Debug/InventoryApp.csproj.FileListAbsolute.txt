@@ -1,6 +1,0 @@
-I:\workspaces\GitHub\InventoryApp\InventoryApp\bin\Debug\InventoryApp.exe.config
-I:\workspaces\GitHub\InventoryApp\InventoryApp\bin\Debug\InventoryApp.exe
-I:\workspaces\GitHub\InventoryApp\InventoryApp\bin\Debug\InventoryApp.pdb
-I:\workspaces\GitHub\InventoryApp\InventoryApp\obj\Debug\InventoryApp.exe
-I:\workspaces\GitHub\InventoryApp\InventoryApp\obj\Debug\InventoryApp.pdb
-I:\workspaces\GitHub\InventoryApp\InventoryApp\obj\Debug\InventoryApp.csprojResolveAssemblyReference.cache
